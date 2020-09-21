@@ -45,6 +45,10 @@ def command_put(mysocket2, argument2):
 
 def command_delete(mysocket2, argument2):
     print("argument delete")
+    request = 'DELE ' + argument2 + '\r\n'
+    mysocket.send(str.encode(request))
+    response = bytes.decode(mysocket.recv(1024))
+    print(response)
 
 
 request = ''
@@ -85,22 +89,16 @@ while(command != 'quit'):
 
     if(argument1 == 'ls'):
         command_ls(mysocket, argument2)
-
     elif(argument1 == 'cd'):
         command_cd(mysocket, argument2)
-
     elif(argument1 == 'get'):
         command_get(mysocket, argument2)
-
     elif(argument1 == 'put'):
         command_put(mysocket, argument2)
-
     elif(argument1 == 'delete'):
         command_delete(mysocket, argument2)
-
     elif(argument1 == 'quit'):
         mysocket.send(str.encode('quit'))
-    
     else:
         print('The command "' + argument1 + '" is unknown')
 
