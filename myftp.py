@@ -3,9 +3,8 @@ import socket
 def command_ls(mysocket, argument2):
     request = 'PASV\r\n'
     mysocket.send(str.encode(request))
-
     response = bytes.decode(mysocket.recv(1024))
-    #print(response)
+    print(response)
     word = 0
     number1 = ''
     number2 = ''
@@ -19,27 +18,33 @@ def command_ls(mysocket, argument2):
         elif(word == 5):
             number2 += i
     Port = int((int(number1)*256)+int(number2))
-
     mysocket2 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     mysocket2.connect(('inet.cs.fiu.edu', Port))
-
     request = 'NLST\r\n'
     mysocket.send(str.encode(request))
-
+    response = bytes.decode(mysocket.recv(1024))
+    print(response)
     response = bytes.decode(mysocket2.recv(1024))
     print(response)
+    response = bytes.decode(mysocket.recv(1024))
+    print(response)
+    
 
 def command_cd(mysocket, argument2):
-    print("argumento cd")
+    print("argument cd")
+    request = 'CWD ' + argument2 + '\r\n'
+    mysocket.send(str.encode(request))
+    response = bytes.decode(mysocket.recv(1024))
+    print(response)
 
 def command_get(mysocket, argument2):
-    print("argumento get")
+    print("argument get")
 
 def command_put(mysocket2, argument2):
-    print("argumento put")
+    print("argument put")
 
 def command_delete(mysocket2, argument2):
-    print("argumento delete")
+    print("argument delete")
 
 
 request = ''
@@ -95,5 +100,8 @@ while(command != 'quit'):
 
     elif(argument1 == 'quit'):
         mysocket.send(str.encode('quit'))
+    
+    else:
+        print('The command "' + argument1 + '" is unknown')
 
 mysocket.close()
