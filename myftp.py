@@ -71,8 +71,34 @@ def command_get(mysocket, argument2):
     
 
 def command_put(mysocket2, argument2):
-
     print("argument put")
+    request = 'PASV\r\n'
+    mysocket.send(str.encode(request))
+    response = bytes.decode(mysocket.recv(1024))
+    print(response)
+    word = 0
+    number1 = ''
+    number2 = ''
+    for i in response:
+        if(i == ','):
+            word += 1
+        elif(i == ')'):
+            break
+        elif(word == 4):
+            number1 += i
+        elif(word == 5):
+            number2 += i
+    Port = int((int(number1)*256)+int(number2))
+    mysocket2 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    mysocket2.connect(('inet.cs.fiu.edu', Port))
+    request = 'STOR ' + argument2 + '\r\n'
+    mysocket.send(str.encode(request))
+    response = bytes.decode(mysocket.recv(1024))
+    print(response)
+    file_sent = open(argument2, 'rb')
+    file_arrive = file_sent.read()
+    mysocket2.send(file_arrive)
+
 
 def command_delete(mysocket2, argument2):
     print("argument delete")
@@ -125,6 +151,8 @@ while(command != 'quit'):
         command_get(mysocket, argument2)
     elif(argument1 == 'put'):
         command_put(mysocket, argument2)
+        response = bytes.decode(mysocket.recv(1024))
+        print(response)
     elif(argument1 == 'delete'):
         command_delete(mysocket, argument2)
     elif(argument1 == 'quit'):
