@@ -1,7 +1,6 @@
 import socket
 import shutil
 
-
 def Pasv_mode():
     request = 'PASV\r\n'
     mysocket.send(str.encode(request))
@@ -24,16 +23,11 @@ def Pasv_mode():
     mysocket2.connect(('inet.cs.fiu.edu', Port))
     return mysocket2
 
-
 def command_ls(mysocket, argument2):
-    if(len(argument2) == 0):
-        print("is 0 man")
-    else:
+    if(len(argument2) > 0):
         request = 'CWD ' + argument2 + '\r\n'
         mysocket.send(str.encode(request))
         response = bytes.decode(mysocket.recv(1024))
-        print("is " + str(len(argument2)) + " man")
-    
     mysocket2 = Pasv_mode()
     request = 'NLST\r\n'
     mysocket.send(str.encode(request))
@@ -43,11 +37,11 @@ def command_ls(mysocket, argument2):
     print(response)
     response = bytes.decode(mysocket.recv(1024))
     print(response)
-    request = 'CWD ..\r\n'
-    mysocket.send(str.encode(request))
-    response = bytes.decode(mysocket.recv(1024))
+    if(len(argument2) > 0):
+        request = 'CWD ..\r\n'
+        mysocket.send(str.encode(request))
+        response = bytes.decode(mysocket.recv(1024))
     
-
 def command_cd(mysocket, argument2):
     request = 'CWD ' + argument2 + '\r\n'
     mysocket.send(str.encode(request))
@@ -63,10 +57,10 @@ def command_get(mysocket, argument2):
     file_got = open(argument2, 'wb')
     file_recv = mysocket2.recv(1024)
     file_got.write(file_recv)
+    print("The file's size is " + str(len(file_recv)) + " bytes")
     response = bytes.decode(mysocket.recv(1024))
     print(response)
     
-
 def command_put(mysocket2, argument2):
     mysocket2 = Pasv_mode()
     request = 'STOR ' + argument2 + '\r\n'
@@ -75,16 +69,14 @@ def command_put(mysocket2, argument2):
     print(response)
     file_sent = open(argument2, 'rb')
     file_arrive = file_sent.read()
+    print("The file's size is " + str(len(file_arrive)) + " bytes")
     mysocket2.send(file_arrive)
 
-
 def command_delete(mysocket2, argument2):
-    print("argument delete")
     request = 'DELE ' + argument2 + '\r\n'
     mysocket.send(str.encode(request))
     response = bytes.decode(mysocket.recv(1024))
     print(response)
-
 
 request = ''
 response = ''
@@ -107,6 +99,15 @@ mysocket.send(str.encode(request))
 
 response = bytes.decode(mysocket.recv(1024))
 print(response)
+
+count = 0
+for q in response:
+    if(q == 'u'):
+        count += 1
+
+if(count != 2):
+    print('Quitting the server')
+    command = 'quit'
 
 while(command != 'quit'):
     command = input('myftp> ')
