@@ -1,7 +1,8 @@
 import socket
 import shutil
 
-def command_ls(mysocket, argument2):
+
+def Pasv_mode():
     request = 'PASV\r\n'
     mysocket.send(str.encode(request))
     response = bytes.decode(mysocket.recv(1024))
@@ -21,6 +22,19 @@ def command_ls(mysocket, argument2):
     Port = int((int(number1)*256)+int(number2))
     mysocket2 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     mysocket2.connect(('inet.cs.fiu.edu', Port))
+    return mysocket2
+
+
+def command_ls(mysocket, argument2):
+    if(len(argument2) == 0):
+        print("is 0 man")
+    else:
+        request = 'CWD ' + argument2 + '\r\n'
+        mysocket.send(str.encode(request))
+        response = bytes.decode(mysocket.recv(1024))
+        print("is " + str(len(argument2)) + " man")
+    
+    mysocket2 = Pasv_mode()
     request = 'NLST\r\n'
     mysocket.send(str.encode(request))
     response = bytes.decode(mysocket.recv(1024))
@@ -29,36 +43,19 @@ def command_ls(mysocket, argument2):
     print(response)
     response = bytes.decode(mysocket.recv(1024))
     print(response)
+    request = 'CWD ..\r\n'
+    mysocket.send(str.encode(request))
+    response = bytes.decode(mysocket.recv(1024))
     
 
 def command_cd(mysocket, argument2):
-    print("argument cd")
     request = 'CWD ' + argument2 + '\r\n'
     mysocket.send(str.encode(request))
     response = bytes.decode(mysocket.recv(1024))
     print(response)
 
 def command_get(mysocket, argument2):
-    print("argument get")
-    request = 'PASV\r\n'
-    mysocket.send(str.encode(request))
-    response = bytes.decode(mysocket.recv(1024))
-    print(response)
-    word = 0
-    number1 = ''
-    number2 = ''
-    for i in response:
-        if(i == ','):
-            word += 1
-        elif(i == ')'):
-            break
-        elif(word == 4):
-            number1 += i
-        elif(word == 5):
-            number2 += i
-    Port = int((int(number1)*256)+int(number2))
-    mysocket2 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    mysocket2.connect(('inet.cs.fiu.edu', Port))
+    mysocket2 = Pasv_mode()
     request = 'RETR ' + argument2 + '\r\n'
     mysocket.send(str.encode(request))
     response = bytes.decode(mysocket.recv(1024))
@@ -71,26 +68,7 @@ def command_get(mysocket, argument2):
     
 
 def command_put(mysocket2, argument2):
-    print("argument put")
-    request = 'PASV\r\n'
-    mysocket.send(str.encode(request))
-    response = bytes.decode(mysocket.recv(1024))
-    print(response)
-    word = 0
-    number1 = ''
-    number2 = ''
-    for i in response:
-        if(i == ','):
-            word += 1
-        elif(i == ')'):
-            break
-        elif(word == 4):
-            number1 += i
-        elif(word == 5):
-            number2 += i
-    Port = int((int(number1)*256)+int(number2))
-    mysocket2 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    mysocket2.connect(('inet.cs.fiu.edu', Port))
+    mysocket2 = Pasv_mode()
     request = 'STOR ' + argument2 + '\r\n'
     mysocket.send(str.encode(request))
     response = bytes.decode(mysocket.recv(1024))
