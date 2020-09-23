@@ -1,5 +1,6 @@
 import socket
 import shutil
+import sys
 
 def Pasv_mode():
     request = 'PASV\r\n'
@@ -20,7 +21,7 @@ def Pasv_mode():
             number2 += i
     Port = int((int(number1)*256)+int(number2))
     mysocket2 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    mysocket2.connect(('inet.cs.fiu.edu', Port))
+    mysocket2.connect((sys.argv[1], Port))
     return mysocket2
 
 def command_ls(mysocket, argument2):
@@ -78,11 +79,12 @@ def command_delete(mysocket2, argument2):
     response = bytes.decode(mysocket.recv(1024))
     print(response)
 
+name_server = sys.argv[1]
 request = ''
 response = ''
 command = ''
 mysocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-mysocket.connect(('inet.cs.fiu.edu', 21))
+mysocket.connect((sys.argv[1], 21))
 response = bytes.decode(mysocket.recv(1024))
 print(response)
 
